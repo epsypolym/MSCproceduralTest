@@ -124,6 +124,7 @@ namespace proceduralTest
             nextChunk.transform.position = spawnLocation.position;
             nextChunk.transform.rotation = spawnLocation.rotation;
             StartCoroutine(ArrayStuff(nextChunk));
+            StartCoroutine(DoASphereCast(spawnLocation));
             currentChunk = nextChunk;
             StartCoroutine(RangeCheck());
             yield return new WaitForEndOfFrame();
@@ -143,18 +144,30 @@ namespace proceduralTest
                 chunkType = currentChunkType;
                 previousChunkType = currentChunkType;
                 StartCoroutine(RandomlyFeedItAZero());
-                nextChunk.GetComponent<Chunk>().currentChunk = true;
                 nextChunk.transform.position = spawnLocation.position;
                 nextChunk.transform.rotation = spawnLocation.rotation;
                 StartCoroutine(ArrayStuff(nextChunk));
-                nextChunk.GetComponent<Chunk>().currentChunk = false;
+                StartCoroutine(DoASphereCast(spawnLocation));
                 currentChunk = nextChunk;
                 StartCoroutine(RangeCheck());
                 yield return new WaitForEndOfFrame();
             }
         }
 
+        IEnumerator DoASphereCast(Transform spawnLocation)
+        {
+            RaycastHit hit;
 
+            Vector3 p1 = spawnLocation.position;
+
+            if (Physics.SphereCast(p1, 5, Vector3.zero, out hit, 0, 31))
+            {
+                GameObject.Destroy(hit.transform.parent.gameObject);
+                ModConsole.Print(hit.transform.parent.gameObject.name);
+            }
+            else ModConsole.Print("FUCK");
+            yield return new WaitForEndOfFrame();   
+        }
 
         IEnumerator ArrayStuff(GameObject roadPrefab)
         {
