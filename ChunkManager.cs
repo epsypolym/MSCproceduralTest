@@ -23,7 +23,7 @@ namespace proceduralTest
         private int currentChunkType;
         private int previousChunkType;
 
-        private GameObject[] chunks = new GameObject[32];
+        private GameObject[] chunks = new GameObject[45];
         private int spawnIndex = 0;
        
 
@@ -41,18 +41,16 @@ namespace proceduralTest
             prefabsLeft = proceduralTest.leftTurns;
             playerb = proceduralTest.player;
             prefabs = new List<GameObject>();
-            prefabs.Insert(0, prefabsRight[0].gameObject);
-            prefabs.Insert(1, prefabsLeft[0].gameObject);
-            prefabs.Insert(2, prefabsRight[1].gameObject);
-            prefabs.Insert(3, prefabsLeft[1].gameObject);
+            prefabs.Insert(0, prefabsLeft[0].gameObject);
+            prefabs.Insert(1, prefabsLeft[1].gameObject);
+            prefabs.Insert(2, prefabsRight[0].gameObject);
+            prefabs.Insert(3, prefabsRight[1].gameObject);
             prefabs.Insert(4, prefabsStraight[0]);
             prefabs.Insert(5, prefabsStraight[0]); // enterprise ready code
             prefabs.Insert(6, prefabsStraight[0]);
             prefabs.Insert(7, prefabsStraight[0]);
             prefabs.Insert(8, prefabsStraight[0]);
             prefabs.Insert(9, prefabsStraight[0]);
-
-
 
             currentChunk = GameObject.Instantiate(prefabsStraight[0]);
             currentChunk.transform.position = new Vector3(0, 60, 0);
@@ -66,7 +64,7 @@ namespace proceduralTest
         #region rangecheck
         IEnumerator RangeCheck()
         {
-            if (Vector3.Distance(currentChunk.transform.position, playerb.transform.position) < 100)
+            if (Vector3.Distance(currentChunk.transform.position, playerb.transform.position) < 85)
             {
                 StartCoroutine(RandomDeterminator6900());
             }
@@ -97,7 +95,7 @@ namespace proceduralTest
 
         IEnumerator RandomlyFeedItAZero()
         {
-            int azero = UnityEngine.Random.Range(0, 128);
+            int azero = UnityEngine.Random.Range(0, 175);
             if(azero == 53 | azero == 69 | azero == 12)
             {
                 previousChunkType = 0;
@@ -108,7 +106,7 @@ namespace proceduralTest
 
         IEnumerator RandomlyFeedItAOne()
         {
-            int aone = UnityEngine.Random.Range(0, 128);
+            int aone = UnityEngine.Random.Range(0, 175);
             if (aone == 32 | aone == 64 | aone == 123)
             {
                 currentChunkType = 1;
@@ -133,7 +131,7 @@ namespace proceduralTest
 
         IEnumerator SpawnChunkTurn(Transform spawnLocation, int chunkType)
         {
-            if (previousChunkType == currentChunkType)
+            if (previousChunkType == currentChunkType | previousChunkType == currentChunkType + 1 | previousChunkType == currentChunkType - 1)
             {
                 StartCoroutine(RandomDeterminator6900());
                 yield return new WaitForEndOfFrame();
@@ -145,14 +143,18 @@ namespace proceduralTest
                 chunkType = currentChunkType;
                 previousChunkType = currentChunkType;
                 StartCoroutine(RandomlyFeedItAZero());
+                nextChunk.GetComponent<Chunk>().currentChunk = true;
                 nextChunk.transform.position = spawnLocation.position;
                 nextChunk.transform.rotation = spawnLocation.rotation;
                 StartCoroutine(ArrayStuff(nextChunk));
+                nextChunk.GetComponent<Chunk>().currentChunk = false;
                 currentChunk = nextChunk;
                 StartCoroutine(RangeCheck());
                 yield return new WaitForEndOfFrame();
             }
         }
+
+
 
         IEnumerator ArrayStuff(GameObject roadPrefab)
         {
@@ -162,7 +164,7 @@ namespace proceduralTest
             }
 
             chunks[spawnIndex] = roadPrefab;
-            spawnIndex = Mathf.FloorToInt(Mathf.Repeat(spawnIndex + 1, 32));
+            spawnIndex = Mathf.FloorToInt(Mathf.Repeat(spawnIndex + 1, 45));
             yield return new WaitForEndOfFrame();
         }
 
