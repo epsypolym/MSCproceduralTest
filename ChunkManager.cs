@@ -119,12 +119,12 @@ namespace proceduralTest
         {
             prefabChunk = prefabs[chunkType];
             nextChunk = GameObject.Instantiate(prefabChunk);
+            StartCoroutine(DoASphereCast(spawnLocation));
             chunkType = currentChunkType;
             previousChunkType = currentChunkType;
             nextChunk.transform.position = spawnLocation.position;
             nextChunk.transform.rotation = spawnLocation.rotation;
             StartCoroutine(ArrayStuff(nextChunk));
-            StartCoroutine(DoASphereCast(spawnLocation));
             currentChunk = nextChunk;
             StartCoroutine(RangeCheck());
             yield return new WaitForEndOfFrame();
@@ -141,13 +141,13 @@ namespace proceduralTest
             {
                 prefabChunk = prefabs[chunkType];
                 nextChunk = GameObject.Instantiate(prefabChunk);
+                StartCoroutine(DoASphereCast(spawnLocation));
                 chunkType = currentChunkType;
                 previousChunkType = currentChunkType;
                 StartCoroutine(RandomlyFeedItAZero());
                 nextChunk.transform.position = spawnLocation.position;
                 nextChunk.transform.rotation = spawnLocation.rotation;
                 StartCoroutine(ArrayStuff(nextChunk));
-                StartCoroutine(DoASphereCast(spawnLocation));
                 currentChunk = nextChunk;
                 StartCoroutine(RangeCheck());
                 yield return new WaitForEndOfFrame();
@@ -156,17 +156,13 @@ namespace proceduralTest
 
         IEnumerator DoASphereCast(Transform spawnLocation)
         {
-            RaycastHit hit;
-
-            Vector3 p1 = spawnLocation.position;
-
-            if (Physics.SphereCast(p1, 5, Vector3.zero, out hit, 0, 31))
+            Collider[] hitColliders = Physics.OverlapSphere(spawnLocation.position, 1, 29);
+            int i = 0;
+            while (i < hitColliders.Length)
             {
-                GameObject.Destroy(hit.transform.parent.gameObject);
-                ModConsole.Print(hit.transform.parent.gameObject.name);
+                GameObject.Destroy(hitColliders[i].transform.parent.gameObject.transform.parent.gameObject);
+                yield return new WaitForEndOfFrame();
             }
-            else ModConsole.Print("FUCK");
-            yield return new WaitForEndOfFrame();   
         }
 
         IEnumerator ArrayStuff(GameObject roadPrefab)
